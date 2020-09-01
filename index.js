@@ -16,22 +16,16 @@ fs.readFile('NavigationOption.json', async (err, rawData) => {
         const context = await browser.newContext({ ignoreHTTPSErrors: true });
         const page = await context.newPage();
 
-       
-        for (let inx = 0; inx < data.navigations.length; inx++) {
-            let obj = data.navigations[inx];
+        for (let navIndex = 0; navIndex < data.navigations.length; navIndex++) {
+            let obj = data.navigations[navIndex];
 
-            //navigate url
             await page.goto(obj.url);
-
-            //wait page to load
             await page.waitForLoadState('networkidle');
 
-            //follow steps if any
             if (obj.steps !== undefined && obj.steps !== null && obj.steps.length > 0) {
-                //sort steps and loop
                 await obj.steps.sort((a, b) => (a.order > b.order) ? 1 : -1)
-                for (let ind = 0; ind < obj.steps.length; ind++) {
-                    let p = obj.steps[ind];
+                for (let stepIndex = 0; stepIndex < obj.steps.length; stepIndex++) {
+                    let p = obj.steps[stepIndex];
                     switch (p.action) {
                         case 'fill':
                             await page.fill(p.control, p.value);
@@ -44,9 +38,7 @@ fs.readFile('NavigationOption.json', async (err, rawData) => {
                 }
             }
 
-            if (obj.screenshot) {
-                await page.screenshot({ path: 'screenshots/' + obj.order + '.png' });
-            }
+            if (obj.screenshot) {await page.screenshot({ path: 'screenshots/' + obj.order + '.png' });}
         };
         browser.close();
     }
