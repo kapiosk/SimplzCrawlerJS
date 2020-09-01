@@ -1,3 +1,4 @@
+#!/usr/bin/env nodejs
 'use strict';
 
 const playwright = require('playwright');
@@ -7,16 +8,15 @@ fs.readFile('NavigationOption.json', async (err, rawData) => {
     if (err !== null && err.length > 0) {
         console.log(err);
     } else {
-        //start headless browser
+        const data = await JSON.parse(rawData)
+        await data.navigations.sort((a, b) => (a.order > b.order) ? 1 : -1)
+        // https://www.npmjs.com/package/playwright
+
         const browser = await playwright['chromium'].launch({ headless: true });
-        //create browser context with https errors disabled
         const context = await browser.newContext({ ignoreHTTPSErrors: true });
-        //add new tab page
         const page = await context.newPage();
 
-        const data = await JSON.parse(rawData);
-        //sort navigation and loop
-        await data.navigations.sort((a, b) => (a.order > b.order) ? 1 : -1)
+       
         for (let inx = 0; inx < data.navigations.length; inx++) {
             let obj = data.navigations[inx];
 
@@ -45,7 +45,7 @@ fs.readFile('NavigationOption.json', async (err, rawData) => {
             }
 
             if (obj.screenshot) {
-                await page.screenshot({ path: 'screenshots/' + Date.now() + '.png' });
+                await page.screenshot({ path: 'screenshots/' + obj.order + '.png' });
             }
         };
         browser.close();
