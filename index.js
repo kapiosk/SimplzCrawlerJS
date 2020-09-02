@@ -6,6 +6,11 @@ const fs = require('fs');
 const http = require('http');
 const url = require('url');
 
+// const fsPromises = fs.promises;
+// await page.goto('https://headlesstesting.com/');
+// const pdf = await page.pdf({ format: 'A4' });
+// await fsPromises.writeFile('test.pdf', pdf);
+
 function RunBot(){
     fs.readFile('NavigationOption.json', async (err, rawData) => {
         if (err !== null && err.length > 0) {
