@@ -53,15 +53,13 @@ function RunBot(){
     
 }
 
-async function CreatePDF(req, res, body) {
-    const requestUrl = url.parse(req.url, true);
-
+async function CreatePDF(res, body, url) {
     const browser = await playwright['chromium'].launch({ headless: true });
     const context = await browser.newContext({ ignoreHTTPSErrors: true });
     const page = await context.newPage();
 
-    if (requestUrl.query.url){
-        await page.goto(requestUrl.query.url);
+    if (url){
+        await page.goto(url);
         await page.waitForLoadState('networkidle');
     } else if (body){
         await page.setContent(body);
@@ -97,7 +95,7 @@ if (process.argv.length == 2){
             req.on('data', function (chunk) {
                 body += chunk;
             }).on('end', function(){
-                CreatePDF(req, res, body);
+                CreatePDF( res, body, reqUrl.query.url);
             });
         }
 
