@@ -79,7 +79,7 @@ async function CreatePDF(req, res, body) {
     }    
 }
 
-if (process.argv.length == 1){
+if (process.argv.length == 2){
     RunBot();
 } else {
     http.createServer((req, res) => {
