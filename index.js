@@ -68,7 +68,7 @@ async function CreatePDF(res, body, url) {
     browser.close();
 
     if (pdf) {
-        res.writeHead(200);
+        res.writeHead(200, { 'Content-Type': 'Content-Type: application/pdf' } );
         res.end(pdf);
     } else {
         res.writeHead(200);
