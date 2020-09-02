@@ -6,13 +6,11 @@ const fs = require('fs');
 const http = require('http');
 const url = require('url');
 
-// const fsPromises = fs.promises;
-// await page.goto('https://headlesstesting.com/');
-// const pdf = await page.pdf({ format: 'A4' });
-// await fsPromises.writeFile('test.pdf', pdf);
+let isBotRunning = false;
 
 function RunBot(){
     fs.readFile('NavigationOption.json', async (err, rawData) => {
+        isBotRunning = true;
         if (err !== null && err.length > 0) {
             console.log(err);
         } else {
@@ -49,19 +47,59 @@ function RunBot(){
                 if (obj.screenshot) { await page.screenshot({ path: 'screenshots/' + obj.order + '.png' }); }
             };
             browser.close();
+            isBotRunning = false;
         }
     });
+    
 }
 
-if (process.argv.length == 2){
+async function CreatePDF(req, res, body) {
+    const requestUrl = url.parse(req.url, true);
+
+    const browser = await playwright['chromium'].launch({ headless: true });
+    const context = await browser.newContext({ ignoreHTTPSErrors: true });
+    const page = await context.newPage();
+
+    if (requestUrl.query.url){
+        await page.goto(requestUrl.query.url);
+        await page.waitForLoadState('networkidle');
+    } else if (body){
+        await page.setContent(body);
+    }
+
+    let pdf = await page.pdf({ format: 'A4' });
+    browser.close();
+
+    if (pdf) {
+        res.writeHead(200);
+        res.end(pdf);
+    } else {
+        res.writeHead(200);
+        res.end('OK');
+    }    
+}
+
+if (process.argv.length == 1){
     RunBot();
 } else {
     http.createServer((req, res) => {
-        const reqUrl = url.parse(request.url, true);
+        const reqUrl = url.parse(req.url, true);
         if (req.method === 'GET' && reqUrl.pathname === '/RunBot') {
-            RunBot();
+            res.writeHead(200);
+            if (!isBotRunning){
+                RunBot();
+                res.end("Bot Started");
+            } else {
+                res.end("Bot Is Running!");
+            }
+        } else if (reqUrl.pathname === '/PDF'){
+            let body = '';
+            req.on('data', function (chunk) {
+                body += chunk;
+            }).on('end', function(){
+                CreatePDF(req, res, body);
+            });
         }
-        res.writeHead(200);
-        res.end('OK');
+
     }).listen(8083, '0.0.0.0');
 }
