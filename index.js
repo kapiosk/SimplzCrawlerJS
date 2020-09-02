@@ -16,7 +16,6 @@ function RunBot(){
         } else {
             const data = await JSON.parse(rawData)
             await data.navigations.sort((a, b) => (a.order > b.order) ? 1 : -1)
-            // https://www.npmjs.com/package/playwright
 
             const browser = await playwright['chromium'].launch({ headless: true });
             const context = await browser.newContext({ ignoreHTTPSErrors: true });
