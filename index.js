@@ -94,7 +94,7 @@ if (process.argv.length == 2){
             req.on('data', function (chunk) {
                 body += chunk;
             }).on('end', function(){
-                CreatePDF( res, body, reqUrl.query.url);
+                CreatePDF(res, body, reqUrl.query.url);
             });
         }
 
