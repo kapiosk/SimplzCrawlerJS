@@ -3,3 +3,5 @@ screenshots/
 .env
 NavigationOption.json
 package-lock.json
+save.sh
+.azure/

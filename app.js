@@ -5,7 +5,7 @@ const playwright = require('playwright');
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
-
+var port = process.env.PORT || 1337;
 let isBotRunning = false;
 
 function RunBot(){
@@ -98,5 +98,5 @@ if (process.argv.length == 2){
             });
         }
 
-    }).listen(8083, '0.0.0.0');
+    }).listen(port);
 }
