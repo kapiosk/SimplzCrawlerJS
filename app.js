@@ -76,7 +76,7 @@ async function CreatePDF(res, body, url) {
     }    
 }
 
-if (process.argv.length == 2){
+if (false){
     RunBot();
 } else {
     http.createServer((req, res) => {
@@ -96,7 +96,10 @@ if (process.argv.length == 2){
             }).on('end', function(){
                 CreatePDF(res, body, reqUrl.query.url);
             });
+        } else {
+            res.writeHead(200);
+            res.end("Hello");
         }
 
-    }).listen(port);
+    }).listen(port, '0.0.0.0');
 }
